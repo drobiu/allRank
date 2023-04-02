@@ -4,13 +4,16 @@ from argparse import ArgumentParser, Namespace
 import numpy as np
 from sklearn.datasets import load_svmlight_file, dump_svmlight_file
 
+# default params
+FEATURES_WITHOUT_LOGARITHM = [
+    5, 6, 7, 8, 9, 15, 19, 57, 58, 62, 75, 79, 85, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 121, 122, 127, 129, 130]
+FEATURES_NEGATIVE = [110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 123, 124]
+
+FEATURES_WITHOUT_LOGARITHM_MQ = [0, 1, 2, 3, 4, 5, 9, 36, 37, 40, 41]
+FEATURES_NEGATIVE_MQ = [25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 38, 39]
+
 
 def parse_args() -> Namespace:
-    # default params
-    FEATURES_WITHOUT_LOGARITHM = [
-        5, 6, 7, 8, 9, 15, 19, 57, 58, 62, 75, 79, 85, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 121, 122, 127, 129, 130]
-    FEATURES_NEGATIVE = [110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 123, 124]
-
     parser = ArgumentParser("Normalize features script")
 
     parser.add_argument("--ds_path", help="location of the dataset", required=True, type=str)
@@ -23,10 +26,21 @@ def parse_args() -> Namespace:
                         help="indices of features which are to be normalized with logarithm but their values can be negative",
                         required=False, type=int, nargs="*" , default=FEATURES_NEGATIVE)
 
+    parser.add_argument("--mq2008",
+                        help="indicates the use of the mq2008 dataset",
+                        required=False, type=bool, nargs="*" , default=False)
+
     return parser.parse_args()
 
 
 args = parse_args()
+
+features_negative = args.features_negative
+features_without_logarithm = args.features_without_logarithm
+
+if args.mq2008:
+    features_negative = FEATURES_NEGATIVE_MQ
+    features_without_logarithm = FEATURES_WITHOUT_LOGARITHM_MQ
 
 x_train, y_train, query_ids_train = load_svmlight_file(os.path.join(args.ds_path, "train.txt"), query_id=True)
 x_test, y_test, query_ids_test = load_svmlight_file(os.path.join(args.ds_path, "test.txt"), query_id=True)
