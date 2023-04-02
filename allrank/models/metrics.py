@@ -111,3 +111,45 @@ def mrr(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE):
     result = result * within_at_mask
 
     return result
+
+
+def avgrank(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE):
+    """
+    Average Rank at k.
+
+    Compute Average Rank at ranks given by ats or at the maximum rank if ats is None.
+    :param y_pred: predictions from the model, shape [batch_size, slate_length]
+    :param y_true: ground truth labels, shape [batch_size, slate_length]
+    :param ats: optional list of ranks for MRR evaluation, if None, maximum rank is used
+    :param padding_indicator: an indicator of the y_true index containing a padded item, e.g. -1
+    :return: MRR values for each slate and evaluation position, shape [batch_size, len(ats)]
+    """
+    y_true = y_true.clone()
+    y_pred = y_pred.clone()
+
+    if ats is None:
+        ats = [y_true.shape[1]]
+
+    true_sorted_by_preds = __apply_mask_and_get_true_sorted_by_preds(y_pred, y_true, padding_indicator)
+
+    values, indices = torch.max(true_sorted_by_preds, dim=1)
+    indices = indices.type_as(values).unsqueeze(dim=0).t().expand(len(y_true), len(ats))
+
+    ats_rep = torch.tensor(data=ats, device=indices.device, dtype=torch.float32).expand(len(y_true), len(ats))
+
+    within_at_mask = (indices < ats_rep).type(torch.float32)
+
+    result = indices + torch.tensor(1.0)
+    print(result)
+
+    zero_sum_mask = torch.sum(values) == 0.0
+    result[zero_sum_mask] = 0.0
+
+    result = result * within_at_mask
+
+    return result
+
+if __name__ == '__main__':
+    y_pred = [0.5, 0.7]
+    y_true = [0, 1]
+    avgrank(torch.tensor([y_pred]), torch.tensor([y_true]), ats=[3])

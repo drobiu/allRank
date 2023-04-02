@@ -26,7 +26,7 @@ def parse_args() -> Namespace:
     parser.add_argument("--job-dir", help="Base output path for all experiments", required=True)
     parser.add_argument("--run-id", help="Name of this run to be recorded (must be unique within output dir)",
                         required=True)
-    parser.add_argument("--config-file-name", required=True, type=str, help="Name of json file with config")
+    parser.add_argument("--config-file-name", required=True, type=os.path.abspath, help="Name of json file with config")
 
     return parser.parse_args()
 

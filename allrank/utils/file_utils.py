@@ -31,7 +31,7 @@ class PathsContainer:
         output_dir = os.path.join(local_base_output_path, "results", run_id)
         tensorboard_output_path = os.path.join(base_output_path, "tb_evals", "single", run_id)
         if not os.path.exists(config_path):
-            print("config not exists at {}, extracting config file path from package {}".format(config_path, package_name))
+            print("config does not exist at {}, extracting config file path from package {}".format(config_path, package_name))
             config_path = resource_filename(Requirement.parse(
                 package_name), os.path.join(package_name, config_path))
         print("will read config from {}".format(config_path))
