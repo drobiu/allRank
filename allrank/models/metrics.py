@@ -28,13 +28,13 @@ def ndcg(y_pred, y_true, ats=None, gain_function=lambda x: torch.pow(2, x) - 1, 
     return ndcg_
 
 
-def __apply_mask_and_get_true_sorted_by_preds(y_pred, y_true, padding_indicator=PADDED_Y_VALUE):
+def __apply_mask_and_get_true_sorted_by_preds(y_pred, y_true, padding_indicator=PADDED_Y_VALUE, desc=True):
     mask = y_true == padding_indicator
 
     y_pred[mask] = float('-inf')
     y_true[mask] = 0.0
 
-    _, indices = y_pred.sort(descending=True, dim=-1)
+    _, indices = y_pred.sort(descending=desc, dim=-1)
     return torch.gather(y_true, dim=1, index=indices)
 
 
@@ -130,22 +130,22 @@ def avgrank(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE):
     if ats is None:
         ats = [y_true.shape[1]]
 
-    true_sorted_by_preds = __apply_mask_and_get_true_sorted_by_preds(y_pred, y_true, padding_indicator)
+    true_sorted_by_preds = __apply_mask_and_get_true_sorted_by_preds(y_pred, y_true, padding_indicator, desc=False)
 
-    values, indices = torch.max(true_sorted_by_preds, dim=1)
-    indices = indices.type_as(values).unsqueeze(dim=0).t().expand(len(y_true), len(ats))
+    indices = torch.arange(0, y_true.shape[1], device=true_sorted_by_preds.device, dtype=torch.float32).expand(y_true.shape)
 
     ats_rep = torch.tensor(data=ats, device=indices.device, dtype=torch.float32).expand(len(y_true), len(ats))
 
     within_at_mask = (indices < ats_rep).type(torch.float32)
 
-    result = indices + torch.tensor(1.0)
-    print(result)
+    result = true_sorted_by_preds + torch.tensor(1.0)
 
     zero_sum_mask = torch.sum(values) == 0.0
     result[zero_sum_mask] = 0.0
 
     result = result * within_at_mask
+
+    result = result.sum(dim=-1) / torch.tensor(ats)
 
     return result
 
@@ -209,6 +209,7 @@ def recall(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE):
     return result
 
 if __name__ == '__main__':
-    y_pred = [0.5, 0.7]
-    y_true = [0, 1]
-    avgrank(torch.tensor([y_pred]), torch.tensor([y_true]), ats=[3])
+    y_pred_1_5 = [0.5, 0.7, 0.9]
+    y_pred_3 = [0.5, 0.7, 0.2]
+    y_true = [0, 1, 2]
+    print(avgrank(torch.tensor([y_pred_1_5, y_pred_3]), torch.tensor([y_true, y_true]), ats=[2]))
