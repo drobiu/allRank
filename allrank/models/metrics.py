@@ -140,9 +140,6 @@ def avgrank(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE):
 
     result = true_sorted_by_preds + torch.tensor(1.0)
 
-    zero_sum_mask = torch.sum(values) == 0.0
-    result[zero_sum_mask] = 0.0
-
     result = result * within_at_mask
 
     result = result.sum(dim=-1) / torch.tensor(ats)
