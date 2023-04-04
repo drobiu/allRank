@@ -149,6 +149,7 @@ def avgrank(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE):
 
     return result
 
+
 def pointwise_rmse(y_pred, y_true, no_of_levels=1, padded_value_indicator=PADDED_Y_VALUE):
     """
     Pointwise RMSE loss.
@@ -158,9 +159,7 @@ def pointwise_rmse(y_pred, y_true, no_of_levels=1, padded_value_indicator=PADDED
     :param padded_value_indicator: an indicator of the y_true index containing a padded item, e.g. -1
     :return: loss value, a torch.Tensor
     """
-    # This was already present and tested in losses.py
-    # TODO: What is no_of_levels?
-    y_pred = y_pred.clone()
+    # This was already present and tested in losses.py    y_pred = y_pred.clone()
     y_true = y_true.clone()
 
     mask = y_true == padded_value_indicator
@@ -179,6 +178,7 @@ def pointwise_rmse(y_pred, y_true, no_of_levels=1, padded_value_indicator=PADDED
 
     return torch.mean(rmses)
 
+
 def recall(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE):
     """
     Recall at k.
@@ -190,23 +190,29 @@ def recall(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE):
     :param padding_indicator: an indicator of the y_true index containing a padded item, e.g. -1
     :return: Recall values for each slate and evaluation position, shape [batch_size, len(ats)]
     """
-    # TODO: Add support for multiple ats values in one list
-    y_true = y_true.clone()
-    y_pred = y_pred.clone()
+    recalls = []
+    for i in range(len(ats)):
 
-    if ats is None:
-        ats = [y_true.shape[1]]
+        y_true = y_true.clone()
+        y_pred = y_pred.clone()
 
-    true_sorted_by_preds = __apply_mask_and_get_true_sorted_by_preds(y_pred, y_true, padding_indicator)
+        if ats is None:
+            ats = [y_true.shape[1]]
 
-    ats_rep = torch.tensor(data=ats, device=true_sorted_by_preds.device, dtype=torch.float32).expand(y_true.shape)
-    indices = torch.arange(0, y_true.shape[1], device=true_sorted_by_preds.device, dtype=torch.float32).expand(y_true.shape)
-    within_at_mask = (indices < ats_rep).type(torch.float32)
+        true_sorted_by_preds = __apply_mask_and_get_true_sorted_by_preds(y_pred, y_true, padding_indicator)
 
-    masked_true_sorted_by_preds = true_sorted_by_preds * within_at_mask
-    result = (torch.sum(masked_true_sorted_by_preds, dim=1)/ torch.sum(within_at_mask, dim=1)).mean()
+        ats_rep = torch.tensor(data=ats[i], device=true_sorted_by_preds.device, dtype=torch.float32).expand(
+            y_true.shape)
+        indices = torch.arange(0, y_true.shape[1], device=true_sorted_by_preds.device, dtype=torch.float32).expand(
+            y_true.shape)
+        within_at_mask = (indices < ats_rep).type(torch.float32)
 
-    return result
+        masked_true_sorted_by_preds = true_sorted_by_preds * within_at_mask
+        recalls.append(
+            torch.sum(masked_true_sorted_by_preds, dim=1, keepdim=True) / torch.sum(true_sorted_by_preds, dim=1,
+                                                                                    keepdim=True))
+    return torch.cat(tuple(recalls), 1)
+
 
 if __name__ == '__main__':
     y_pred = [0.5, 0.7]
