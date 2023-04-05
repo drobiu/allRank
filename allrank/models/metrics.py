@@ -173,7 +173,7 @@ def pointwise_rmse(y_pred, y_true, no_of_levels=1, padded_value_indicator=PADDED
 
     rmses = torch.sqrt(mean_squared_errors)
 
-    return torch.mean(rmses)
+    return rmses
 
 
 def recall(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE):
