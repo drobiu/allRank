@@ -272,7 +272,7 @@ def precision(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE, cutoff
         true_positives = (true_sorted_by_preds >= cutoff).type(torch.float32) * within_at_mask
 
         result = torch.sum(true_positives, dim=1) / torch.sum(within_at_mask, dim=1)
-        # print(true_positives, "\r", within_at_mask,"\r", ats_rep)
+
         zero_sum_mask = torch.sum(values) == 0.0
         result[zero_sum_mask] = 0.0
 
@@ -321,9 +321,3 @@ def map(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE, cutoff=2):
         res[i] = running_sums[np.array(ats)-1]
 
     return res
-
-if __name__ == '__main__':
-    y_pred_1_5 = [0.5, 0.7, 0.9]
-    y_pred_3 = [0.5, 0.7, 0.2]
-    y_true = [0, 2, 2]
-    print(precision(torch.tensor([y_pred_1_5, y_pred_3]), torch.tensor([y_true, y_true]), ats=[1, 2, 3]))
