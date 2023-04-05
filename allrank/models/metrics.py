@@ -77,7 +77,7 @@ def dcg(y_pred, y_true, ats=None, gain_function=lambda x: torch.pow(2, x) - 1, p
     return dcg
 
 
-def mrr(y_pred, y_true, ats=None, min_relevance = 1.0, padding_indicator=PADDED_Y_VALUE):
+def mrr(y_pred, y_true, ats=None, min_relevance=1.0, padding_indicator=PADDED_Y_VALUE):
     """
     Mean Reciprocal Rank at k.
 
@@ -132,7 +132,8 @@ def avgrank(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE):
 
     true_sorted_by_preds = __apply_mask_and_get_true_sorted_by_preds(y_pred, y_true, padding_indicator, desc=False)
 
-    indices = torch.arange(0, y_true.shape[1], device=true_sorted_by_preds.device, dtype=torch.float32).expand(y_true.shape)
+    indices = torch.arange(0, y_true.shape[1], device=true_sorted_by_preds.device, dtype=torch.float32).expand(
+        y_true.shape)
 
     ats_rep = torch.tensor(data=ats, device=indices.device, dtype=torch.float32).expand(len(y_true), len(ats))
 
@@ -176,7 +177,7 @@ def pointwise_rmse(y_pred, y_true, no_of_levels=1, padded_value_indicator=PADDED
     return rmses
 
 
-def recall(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE):
+def recall(y_pred, y_true, ats=None, min_relevance=1, padding_indicator=PADDED_Y_VALUE):
     """
     Recall at k.
 
@@ -184,6 +185,7 @@ def recall(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE):
     :param y_pred: predictions from the model, shape [batch_size, slate_length]
     :param y_true: ground truth labels, shape [batch_size, slate_length]
     :param ats: optional list of ranks for MRR evaluation, if None, maximum rank is used
+    :param min_relevance: minimum relevance value to be considered as relevant
     :param padding_indicator: an indicator of the y_true index containing a padded item, e.g. -1
     :return: Recall values for each slate and evaluation position, shape [batch_size, len(ats)]
     """
@@ -205,9 +207,12 @@ def recall(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE):
         within_at_mask = (indices < ats_rep).type(torch.float32)
 
         masked_true_sorted_by_preds = true_sorted_by_preds * within_at_mask
+        relevant_retrieved = masked_true_sorted_by_preds >= min_relevance
+        relevant_total = (true_sorted_by_preds >= min_relevance).type(torch.float32).sum(dim=1, keepdim=True)
         recalls.append(
-            torch.sum(masked_true_sorted_by_preds, dim=1, keepdim=True) / torch.sum(true_sorted_by_preds, dim=1,
-                                                                                    keepdim=True))
+            torch.sum(relevant_retrieved, dim=1, keepdim=True) / relevant_total)
+        zero_mask = relevant_total == 0
+        recalls[i][zero_mask] = 0
     return torch.cat(tuple(recalls), 1)
 
 
@@ -247,24 +252,24 @@ def precision(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE, cutoff
                     current_correct += 1
                 # add current precision
                 running_sums[at] = current_correct / (at + 1)
-            res[i] = running_sums[np.array(ats)-1]
+            res[i] = running_sums[np.array(ats) - 1]
 
         return res
 
     else:
 
-        true_sorted_by_preds = __apply_mask_and_get_true_sorted_by_preds(y_pred, y_true, padding_indicator)\
+        true_sorted_by_preds = __apply_mask_and_get_true_sorted_by_preds(y_pred, y_true, padding_indicator) \
             .unsqueeze(dim=0).expand(len(ats), y_true.shape[0], y_true.shape[1])
 
         print(true_sorted_by_preds, true_sorted_by_preds.shape)
 
         values, indices = torch.max(true_sorted_by_preds, dim=1)
-        indices = torch.arange(0, y_true.shape[1], device=true_sorted_by_preds.device, dtype=torch.float32)\
-            .unsqueeze(dim=0).expand(y_true.shape[0], y_true.shape[1])\
+        indices = torch.arange(0, y_true.shape[1], device=true_sorted_by_preds.device, dtype=torch.float32) \
+            .unsqueeze(dim=0).expand(y_true.shape[0], y_true.shape[1]) \
             .unsqueeze(dim=0).expand(len(ats), y_true.shape[0], y_true.shape[1])
         print(indices)
 
-        ats_rep = torch.tensor(data=ats, device=indices.device, dtype=torch.float32).expand(len(ats), y_true.shape[1])\
+        ats_rep = torch.tensor(data=ats, device=indices.device, dtype=torch.float32).expand(len(ats), y_true.shape[1]) \
             .unsqueeze(dim=1).expand(len(ats), y_true.shape[0], y_true.shape[1])
 
         within_at_mask = (indices < ats_rep).type(torch.float32)
@@ -277,6 +282,7 @@ def precision(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE, cutoff
         result[zero_sum_mask] = 0.0
 
         return result
+
 
 def map(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE, cutoff=2):
     """
@@ -318,6 +324,6 @@ def map(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE, cutoff=2):
                 running_sum += current_correct / (at + 1)
             if current_correct > 0:
                 running_sums[at] = running_sum / current_correct
-        res[i] = running_sums[np.array(ats)-1]
+        res[i] = running_sums[np.array(ats) - 1]
 
     return res
