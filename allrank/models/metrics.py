@@ -77,7 +77,7 @@ def dcg(y_pred, y_true, ats=None, gain_function=lambda x: torch.pow(2, x) - 1, p
     return dcg
 
 
-def mrr(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE):
+def mrr(y_pred, y_true, ats=None, min_relevance = 1.0, padding_indicator=PADDED_Y_VALUE):
     """
     Mean Reciprocal Rank at k.
 
@@ -85,6 +85,7 @@ def mrr(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE):
     :param y_pred: predictions from the model, shape [batch_size, slate_length]
     :param y_true: ground truth labels, shape [batch_size, slate_length]
     :param ats: optional list of ranks for MRR evaluation, if None, maximum rank is used
+    :param min_relevance: minimum relevance value to be considered as relevant
     :param padding_indicator: an indicator of the y_true index containing a padded item, e.g. -1
     :return: MRR values for each slate and evaluation position, shape [batch_size, len(ats)]
     """
@@ -104,8 +105,7 @@ def mrr(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE):
     within_at_mask = (indices < ats_rep).type(torch.float32)
 
     result = torch.tensor(1.0) / (indices + torch.tensor(1.0))
-
-    zero_sum_mask = torch.sum(values) == 0.0
+    zero_sum_mask = torch.all(true_sorted_by_preds < min_relevance, dim=1)
     result[zero_sum_mask] = 0.0
 
     result = result * within_at_mask
@@ -280,14 +280,15 @@ def precision(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE, cutoff
 
 def map(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE, cutoff=2):
     """
-    Recall at k.
+    Map at k.
 
-    Compute Recall at ranks given by ats or at the maximum rank if ats is None.
+    Compute mean average precision at ranks given by ats or at the maximum rank if ats is None.
     :param y_pred: predictions from the model, shape [batch_size, slate_length]
     :param y_true: ground truth labels, shape [batch_size, slate_length]
     :param ats: optional list of ranks for MRR evaluation, if None, maximum rank is used
     :param padding_indicator: an indicator of the y_true index containing a padded item, e.g. -1
-    :return: Recall values for each slate and evaluation position, shape [batch_size, len(ats)]
+    :param cutoff: the minimum relevance value to be considered as relevant
+    :return: Mean average precision values for each slate and evaluation position, shape [batch_size, len(ats)]
     """
     # TODO: Add support for multiple ats values in one list
     y_true = y_true.clone()
