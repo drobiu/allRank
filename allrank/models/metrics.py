@@ -19,9 +19,12 @@ def ndcg(y_pred, y_true, ats=None, gain_function=lambda x: torch.pow(2, x) - 1, 
     :return: NDCG values for each slate and rank passed, shape [batch_size, len(ats)]
     """
     idcg = dcg(y_true, y_true, ats, gain_function, padding_indicator)
-    ndcg_ = dcg(y_pred, y_true, ats, gain_function, padding_indicator) / idcg
+    dcg_ = dcg(y_pred, y_true, ats, gain_function, padding_indicator)
+    ndcg_ = dcg_ / idcg
     idcg_mask = idcg == 0
     ndcg_[idcg_mask] = filler_value  # if idcg == 0 , set ndcg to filler_value
+    dcg_mask = dcg_ == 0
+    ndcg_[dcg_mask] = 0.0  # if dcg == 0 , set ndcg to filler_value
 
     assert (ndcg_ < 0.0).sum() >= 0, "every ndcg should be non-negative"
 

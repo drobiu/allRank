@@ -13,6 +13,7 @@ def ndcg_wrap(y_pred, y_true, ats=None):
 
 def ndcg_wrap_multiple_slates(y_pred, y_true, ats=None):
     return ndcg(torch.tensor(y_pred), torch.tensor(y_true), ats=ats).numpy()
+
 def test_ndcg_simple_1():
     y_pred = [0.5, 0.2]
     y_true = [1.0, 0.0]
@@ -37,7 +38,7 @@ def test_ndcg_one_when_no_relevant():
 
     result = ndcg_wrap(y_pred, y_true)
 
-    assert (result == 1.0)
+    assert (result == 0.0)
 
 
 def test_ndcg_for_multiple_ats():
