@@ -187,9 +187,9 @@ def rmse(y_pred, y_true, ats=None, no_of_levels=1, padded_value_indicator=PADDED
 
     rmses = torch.sqrt(mean_squared_errors)
 
-    rmses = rmses.unsqueeze(dim=0).expand(1, len(y_true))
+    rmses = rmses.unsqueeze(dim=0).t()
 
-    return rmses.t().detach()
+    return rmses.detach()
 
 
 def recall(y_pred, y_true, ats=None, min_relevance=1, padding_indicator=PADDED_Y_VALUE):

@@ -55,10 +55,7 @@
   "loss": {
     "name": "pointwise",
     "args": {
-      "temperature": 1.0,
-      "k": null,
-      "powered_relevancies": true,
-      "stochastic": false
+      "no_of_levels": 5
     }
   },
   "detect_anomaly": false,
