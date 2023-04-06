@@ -53,12 +53,9 @@
 
   ],
   "loss": {
-    "name": "pointwise",
+    "name": "pointwise_rmse",
     "args": {
-      "temperature": 1.0,
-      "k": null,
-      "powered_relevancies": true,
-      "stochastic": false
+      "no_of_levels": 3
     }
   },
   "detect_anomaly": false,

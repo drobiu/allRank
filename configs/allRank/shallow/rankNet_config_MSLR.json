@@ -13,7 +13,7 @@
     }
   },
   "data": {
-    "path": "../IR_final_project/data/MSLR-WEB10K/Fold1_normalized",
+    "path": "../IR_final_project/data/MSLR-WEB10K/Fold1",
     "validation_ds_role": "test",
     "num_workers": 1,
     "batch_size": 64,
@@ -55,10 +55,6 @@
   "loss": {
     "name": "rankNet",
     "args": {
-      "temperature": 1.0,
-      "k": null,
-      "powered_relevancies": true,
-      "stochastic": false
     }
   },
   "detect_anomaly": false,
