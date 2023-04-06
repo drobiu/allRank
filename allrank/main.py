@@ -4,6 +4,7 @@ import allrank.models.losses as losses
 import numpy as np
 import os
 import torch
+import time
 from allrank.config import Config
 from allrank.data.dataset_loading import load_libsvm_dataset, create_data_loaders
 from allrank.models.model import make_model
@@ -86,6 +87,7 @@ def run():
     else:
         scheduler = None
 
+    time_start = time.time()
     with torch.autograd.detect_anomaly() if config.detect_anomaly else dummy_context_mgr():  # type: ignore
         # run training
         result = fit(
@@ -101,6 +103,9 @@ def run():
             tensorboard_output_path=paths.tensorboard_output_path,
             **asdict(config.training)
         )
+    time_end = time.time()
+
+    logger.info(f"Time training: {time_end - time_start}")
 
     dump_experiment_result(args, config, paths.output_dir, result)
 

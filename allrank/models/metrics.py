@@ -60,6 +60,10 @@ def dcg(y_pred, y_true, ats=None, gain_function=lambda x: torch.pow(2, x) - 1, p
 
     if ats is None:
         ats = [actual_length]
+
+    ats = np.where(ats == 0, y_true.shape[1], ats)
+    ats = np.where(ats == 0, y_true.shape[1], ats)
+
     ats = [min(at, actual_length) for at in ats]
 
     true_sorted_by_preds = __apply_mask_and_get_true_sorted_by_preds(y_pred, y_true, padding_indicator)
@@ -98,6 +102,9 @@ def mrr(y_pred, y_true, ats=None, min_relevance=1.0, padding_indicator=PADDED_Y_
     if ats is None:
         ats = [y_true.shape[1]]
 
+    ats = np.where(ats == 0, y_true.shape[1], ats)
+    ats = np.where(ats == 0, y_true.shape[1], ats)
+
     true_sorted_by_preds = __apply_mask_and_get_true_sorted_by_preds(y_pred, y_true, padding_indicator)
 
     values, indices = torch.max(true_sorted_by_preds, dim=1)
@@ -133,6 +140,9 @@ def avgrank(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE):
     if ats is None:
         ats = [y_true.shape[1]]
 
+    ats = np.where(ats == 0, y_true.shape[1], ats)
+    ats = np.where(ats == 0, y_true.shape[1], ats)
+
     true_sorted_by_preds = __apply_mask_and_get_true_sorted_by_preds(y_pred, y_true, padding_indicator, desc=False)
 
     indices = torch.arange(0, y_true.shape[1], device=true_sorted_by_preds.device, dtype=torch.float32).expand(
@@ -151,7 +161,7 @@ def avgrank(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE):
     return result
 
 
-def pointwise_rmse(y_pred, y_true, no_of_levels=1, padded_value_indicator=PADDED_Y_VALUE):
+def rmse(y_pred, y_true, ats=None, no_of_levels=1, padded_value_indicator=PADDED_Y_VALUE):
     """
     Pointwise RMSE loss.
     :param y_pred: predictions from the model, shape [batch_size, slate_length]
@@ -177,7 +187,9 @@ def pointwise_rmse(y_pred, y_true, no_of_levels=1, padded_value_indicator=PADDED
 
     rmses = torch.sqrt(mean_squared_errors)
 
-    return rmses
+    rmses = rmses.unsqueeze(dim=0).expand(1, len(y_true))
+
+    return rmses.t().detach()
 
 
 def recall(y_pred, y_true, ats=None, min_relevance=1, padding_indicator=PADDED_Y_VALUE):
@@ -200,6 +212,9 @@ def recall(y_pred, y_true, ats=None, min_relevance=1, padding_indicator=PADDED_Y
 
         if ats is None:
             ats = [y_true.shape[1]]
+
+        ats = np.where(ats == 0, y_true.shape[1], ats)
+        ats = np.where(ats == 0, y_true.shape[1], ats)
 
         true_sorted_by_preds = __apply_mask_and_get_true_sorted_by_preds(y_pred, y_true, padding_indicator)
 
@@ -237,6 +252,9 @@ def precision(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE, cutoff
     if ats is None:
         ats = [y_true.shape[1]]
 
+    ats = np.where(ats == 0, y_true.shape[1], ats)
+    ats = np.where(ats == 0, y_true.shape[1], ats)
+
     if no_torch:
         max_at = min(max(ats), y_true.shape[1])
 
@@ -257,7 +275,7 @@ def precision(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE, cutoff
                 running_sums[at] = current_correct / (at + 1)
             res[i] = running_sums[np.array(ats) - 1]
 
-        return res
+        return torch.tensor(res)
 
     else:
 
@@ -317,10 +335,11 @@ def map(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE, cutoff=2):
     for i, r in enumerate(true_sorted_by_preds):
         # count current sum of precisions
         running_sum = 0
-        running_sums = np.zeros((max_at))
+        max_len = len(r) if 0 in ats else max_at
+        running_sums = np.zeros((max_len))
         # count current amount of true positives
         current_correct = 0
-        for at in range(max_at):
+        for at in range(max_len):
             if r[at] >= cutoff:
                 current_correct += 1
                 # add current precision
@@ -329,4 +348,4 @@ def map(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE, cutoff=2):
                 running_sums[at] = running_sum / current_correct
         res[i] = running_sums[np.array(ats) - 1]
 
-    return res
+    return torch.tensor(res)
