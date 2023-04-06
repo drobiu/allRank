@@ -55,7 +55,7 @@ def run():
     execute_command("cp {} {}".format(paths.config_path, output_config_path))
 
     # train_ds, val_ds
-    train_ds, val_ds = load_libsvm_dataset(
+    train_ds, val_ds, test_ds = load_libsvm_dataset(
         input_path=config.data.path,
         slate_length=config.data.slate_length,
         validation_ds_role=config.data.validation_ds_role,
@@ -64,9 +64,9 @@ def run():
     n_features = train_ds.shape[-1]
     assert n_features == val_ds.shape[-1], "Last dimensions of train_ds and val_ds do not match!"
 
-    # train_dl, val_dl
-    train_dl, val_dl = create_data_loaders(
-        train_ds, val_ds, num_workers=config.data.num_workers, batch_size=config.data.batch_size)
+    # train_dl, val_dl, test_dl
+    train_dl, val_dl, test_dl = create_data_loaders(
+        train_ds, val_ds, test_ds, num_workers=config.data.num_workers, batch_size=config.data.batch_size)
 
     # gpu support
     dev = get_torch_device()
@@ -97,6 +97,7 @@ def run():
             scheduler=scheduler,
             train_dl=train_dl,
             valid_dl=val_dl,
+            test_dl=test_dl,
             config=config,
             device=dev,
             output_dir=paths.output_dir,

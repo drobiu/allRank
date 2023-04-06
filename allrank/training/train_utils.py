@@ -70,12 +70,21 @@ def epoch_summary(epoch, train_loss, val_loss, train_metrics, val_metrics):
     return summary
 
 
+def fit_summary(fit_metrics):
+    summary = "Final metrics :"
+    for metric_name, metric_value in fit_metrics.items():
+        summary += " Test {metric_name} {metric_value}".format(
+            metric_name=metric_name, metric_value=metric_value)
+
+    return summary
+
+
 def get_current_lr(optimizer):
     for param_group in optimizer.param_groups:
         return param_group["lr"]
 
 
-def fit(epochs, model, loss_func, optimizer, scheduler, train_dl, valid_dl, config,
+def fit(epochs, model, loss_func, optimizer, scheduler, train_dl, valid_dl, test_dl, config,
         gradient_clipping_norm, early_stopping_patience, device, output_dir, tensorboard_output_path):
     tensorboard_summary_writer = TensorboardSummaryWriter(tensorboard_output_path)
 
@@ -135,6 +144,9 @@ def fit(epochs, model, loss_func, optimizer, scheduler, train_dl, valid_dl, conf
                     epoch, config.val_metric, early_stop.best_epoch, early_stop.best_value, current_val_metric_value
                 ))
             break
+
+    test_metrics = compute_metrics(config.metrics, model, test_dl, device)
+    logger.info(fit_summary(test_metrics)) 
 
     torch.save(model.state_dict(), os.path.join(output_dir, "model.pkl"))
     tensorboard_summary_writer.close_all_writers()
