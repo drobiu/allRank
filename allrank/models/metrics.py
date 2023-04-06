@@ -123,6 +123,10 @@ def mrr(y_pred, y_true, ats=None, min_relevance=1.0, padding_indicator=PADDED_Y_
     return result
 
 
+def mrr2(y_pred, y_true, ats=None, min_relevance=2.0, padding_indicator=PADDED_Y_VALUE):
+    return mrr(y_pred, y_true, ats=None, min_relevance=min_relevance, padding_indicator=PADDED_Y_VALUE)
+
+
 def avgrank(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE):
     """
     Average Rank at k.
@@ -192,6 +196,10 @@ def rmse(y_pred, y_true, ats=None, no_of_levels=1, padded_value_indicator=PADDED
     return rmses.detach()
 
 
+def rmse(y_pred, y_true, ats=None, no_of_levels=2, padded_value_indicator=PADDED_Y_VALUE):
+    return rmse(y_pred, y_true, ats=None, no_of_levels=no_of_levels, padded_value_indicator=PADDED_Y_VALUE)
+
+
 def recall(y_pred, y_true, ats=None, min_relevance=1, padding_indicator=PADDED_Y_VALUE):
     """
     Recall at k.
@@ -234,7 +242,11 @@ def recall(y_pred, y_true, ats=None, min_relevance=1, padding_indicator=PADDED_Y
     return torch.cat(tuple(recalls), 1)
 
 
-def precision(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE, cutoff=2, no_torch=True):
+def recall2(y_pred, y_true, ats=None, min_relevance=2, padding_indicator=PADDED_Y_VALUE):
+    return recall(y_pred, y_true, ats=None, min_relevance=min_relevance, padding_indicator=PADDED_Y_VALUE)
+
+
+def precision(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE, cutoff=1, no_torch=True):
     """
     Recall at k.
 
@@ -305,7 +317,11 @@ def precision(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE, cutoff
         return result
 
 
-def map(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE, cutoff=2):
+def precision2(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE, cutoff=2, no_torch=True):
+    return precision(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE, cutoff=cutoff, no_torch=True)
+
+
+def map(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE, cutoff=1):
     """
     Map at k.
 
@@ -349,3 +365,7 @@ def map(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE, cutoff=2):
         res[i] = running_sums[np.array(ats) - 1]
 
     return torch.tensor(res)
+
+
+def map2(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE, cutoff=2):
+    return map(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE, cutoff=cutoff)
