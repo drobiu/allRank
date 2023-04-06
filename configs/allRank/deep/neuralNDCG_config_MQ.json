@@ -19,8 +19,8 @@
     }
   },
   "data": {
-    "path": "../IR_final_project/data/MQ2008/Fold1_normalized",
-    "validation_ds_role": "test",
+    "path": "../IR_final_project/data/MQ2008",
+    "validation_ds_role": "vali",
     "num_workers": 1,
     "batch_size": 64,
     "slate_length": 240

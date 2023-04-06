@@ -28,6 +28,7 @@ def parse_args() -> Namespace:
     parser.add_argument("--run-id", help="Name of this run to be recorded (must be unique within output dir)",
                         required=True)
     parser.add_argument("--config-file-name", required=True, type=os.path.abspath, help="Name of json file with config")
+    parser.add_argument("--fold-dir", required=False, type=str)
 
     return parser.parse_args()
 
@@ -54,9 +55,11 @@ def run():
     output_config_path = os.path.join(paths.output_dir, "used_config.json")
     execute_command("cp {} {}".format(paths.config_path, output_config_path))
 
+    data_path = os.path.join(config.data.path, args.fold_dir)
+
     # train_ds, val_ds
     train_ds, val_ds, test_ds = load_libsvm_dataset(
-        input_path=config.data.path,
+        input_path=data_path,
         slate_length=config.data.slate_length,
         validation_ds_role=config.data.validation_ds_role,
     )
