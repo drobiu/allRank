@@ -75,4 +75,4 @@ dummy_data
 
 # Outfiles
 *.out.*
-*test_logs*
+test_logs

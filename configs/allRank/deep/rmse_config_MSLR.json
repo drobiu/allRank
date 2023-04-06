@@ -19,7 +19,7 @@
     }
   },
   "data": {
-    "path": "../IR_final_project/data/MSLR-WEB10K/Fold1_normalized",
+    "path": "../IR_final_project/data/MSLR-WEB10K",
     "validation_ds_role": "test",
     "num_workers": 1,
     "batch_size": 64,
@@ -40,29 +40,36 @@
   },
   "training": {
     "epochs": 100,
-    "early_stopping_patience": 100,
+    "early_stopping_patience": 10,
     "gradient_clipping_norm": null
   },
   "val_metric": "ndcg_5",
   "metrics": [
     "mrr",
     "map",
-    "map2",
+    "map3",
+    "map4",
     "ndcg",
     "ndcg_5",
     "precision_1",
     "precision_5",
     "precision_10",
-    "precision2_1",
-    "precision2_5",
-    "precision2_10",
+    "precision3_1",
+    "precision3_5",
+    "precision3_10",
+    "precision4_1",
+    "precision4_5",
+    "precision4_10",
     "recall_1",
     "recall_5",
     "recall_10",
-    "recall2_1",
-    "recall2_5",
-    "recall2_10",
-    "rmse"
+    "recall3_1",
+    "recall3_5",
+    "recall3_10",
+    "recall4_1",
+    "recall4_5",
+    "recall4_10",
+    "rmse4"
 
   ],
   "loss": {
