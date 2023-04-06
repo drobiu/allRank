@@ -3,8 +3,8 @@
     "fc_model": {
       "sizes": [96],
       "input_norm": false,
-      "activation": null,
-      "dropout": 0.0
+      "activation": "Sigmoid",
+      "dropout": 0.05
     },
     "transformer": false,
     "post_model": {
@@ -13,7 +13,7 @@
     }
   },
   "data": {
-    "path": "../IR_final_project/data/MQ2008/Fold1_normalized",
+    "path": "./data/MQ2008/Fold1",
     "validation_ds_role": "test",
     "num_workers": 1,
     "batch_size": 64,
@@ -34,7 +34,7 @@
   },
   "training": {
     "epochs": 100,
-    "early_stopping_patience": 100,
+    "early_stopping_patience": 10,
     "gradient_clipping_norm": null
   },
   "val_metric": "ndcg_5",
