@@ -66,9 +66,9 @@
 
   ],
   "loss": {
-    "name": "pointwise",
+    "name": "pointwise_rmse",
     "args": {
-      "no_of_levels": 5
+      "no_of_levels": 4
     }
   },
   "detect_anomaly": false,

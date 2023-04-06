@@ -62,13 +62,13 @@
     "recall2_1",
     "recall2_5",
     "recall2_10",
-    "rmse"
+    "rmse2"
 
   ],
   "loss": {
-    "name": "pointwise",
+    "name": "pointwise_rmse",
     "args": {
-      "no_of_levels": 3
+      "no_of_levels": 2
     }
   },
   "detect_anomaly": false,

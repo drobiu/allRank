@@ -62,7 +62,7 @@
     "recall2_1",
     "recall2_5",
     "recall2_10",
-    "rmse"
+    "rmse2"
 
   ],
   "loss": {

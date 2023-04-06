@@ -124,7 +124,7 @@ def mrr(y_pred, y_true, ats=None, min_relevance=1.0, padding_indicator=PADDED_Y_
 
 
 def mrr2(y_pred, y_true, ats=None, min_relevance=2.0, padding_indicator=PADDED_Y_VALUE):
-    return mrr(y_pred, y_true, ats=None, min_relevance=min_relevance, padding_indicator=PADDED_Y_VALUE)
+    return mrr(y_pred, y_true, ats=ats, min_relevance=min_relevance, padding_indicator=PADDED_Y_VALUE)
 
 
 def avgrank(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE):
@@ -196,8 +196,8 @@ def rmse(y_pred, y_true, ats=None, no_of_levels=1, padded_value_indicator=PADDED
     return rmses.detach()
 
 
-def rmse(y_pred, y_true, ats=None, no_of_levels=2, padded_value_indicator=PADDED_Y_VALUE):
-    return rmse(y_pred, y_true, ats=None, no_of_levels=no_of_levels, padded_value_indicator=PADDED_Y_VALUE)
+def rmse2(y_pred, y_true, ats=None, no_of_levels=2, padded_value_indicator=PADDED_Y_VALUE):
+    return rmse(y_pred, y_true, ats, no_of_levels, padded_value_indicator)
 
 
 def recall(y_pred, y_true, ats=None, min_relevance=1, padding_indicator=PADDED_Y_VALUE):
@@ -243,7 +243,7 @@ def recall(y_pred, y_true, ats=None, min_relevance=1, padding_indicator=PADDED_Y
 
 
 def recall2(y_pred, y_true, ats=None, min_relevance=2, padding_indicator=PADDED_Y_VALUE):
-    return recall(y_pred, y_true, ats=None, min_relevance=min_relevance, padding_indicator=PADDED_Y_VALUE)
+    return recall(y_pred, y_true, ats, min_relevance, padding_indicator)
 
 
 def precision(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE, cutoff=1, no_torch=True):
@@ -318,7 +318,7 @@ def precision(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE, cutoff
 
 
 def precision2(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE, cutoff=2, no_torch=True):
-    return precision(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE, cutoff=cutoff, no_torch=True)
+    return precision(y_pred, y_true, ats, padding_indicator, cutoff, no_torch)
 
 
 def map(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE, cutoff=1):
@@ -368,4 +368,4 @@ def map(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE, cutoff=1):
 
 
 def map2(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE, cutoff=2):
-    return map(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE, cutoff=cutoff)
+    return map(y_pred, y_true, ats, padding_indicator, cutoff)
