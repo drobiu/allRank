@@ -19,8 +19,8 @@
     }
   },
   "data": {
-    "path": "../IR_final_project/data/MQ2008",
-    "validation_ds_role": "vali",
+    "path": "../IR_final_project/data/MQ2008/Fold1_normalized",
+    "validation_ds_role": "test",
     "num_workers": 1,
     "batch_size": 64,
     "slate_length": 240
@@ -40,7 +40,7 @@
   },
   "training": {
     "epochs": 100,
-    "early_stopping_patience": 10,
+    "early_stopping_patience": 100,
     "gradient_clipping_norm": null
   },
   "val_metric": "ndcg_5",
@@ -63,7 +63,7 @@
     "recall2_1",
     "recall2_5",
     "recall2_10",
-    "rmse2"
+    "rmse"
 
   ],
   "loss": {

@@ -4,7 +4,7 @@
       "sizes": [96],
       "input_norm": false,
       "activation": "Sigmoid",
-      "dropout": 0.05
+      "dropout": 0.1
     },
     "transformer": false,
     "post_model": {
@@ -13,8 +13,8 @@
     }
   },
   "data": {
-    "path": "../IR_final_project/data/MQ2008/Fold1_normalized",
-    "validation_ds_role": "test",
+    "path": "./data/MQ2008",
+    "validation_ds_role": "vali",
     "num_workers": 1,
     "batch_size": 64,
     "slate_length": 240
@@ -44,6 +44,7 @@
     "map2",
     "ndcg",
     "ndcg_5",
+    "dncg_10",
     "precision_1",
     "precision_5",
     "precision_10",
