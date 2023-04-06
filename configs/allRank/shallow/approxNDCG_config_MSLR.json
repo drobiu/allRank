@@ -3,8 +3,8 @@
     "fc_model": {
       "sizes": [96],
       "input_norm": false,
-      "activation": null,
-      "dropout": 0.0
+      "activation": "Sigmoid",
+      "dropout": 0.05
     },
     "transformer": false,
     "post_model": {
@@ -34,21 +34,28 @@
   },
   "training": {
     "epochs": 100,
-    "early_stopping_patience": 100,
+    "early_stopping_patience": 10,
     "gradient_clipping_norm": null
   },
   "val_metric": "ndcg_5",
   "metrics": [
     "mrr",
     "map",
+    "map2",
     "ndcg",
     "ndcg_5",
     "precision_1",
     "precision_5",
     "precision_10",
+    "precision2_1",
+    "precision2_5",
+    "precision2_10",
     "recall_1",
     "recall_5",
     "recall_10",
+    "recall2_1",
+    "recall2_5",
+    "recall2_10",
     "rmse"
 
   ],

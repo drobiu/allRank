@@ -47,14 +47,21 @@
   "metrics": [
     "mrr",
     "map",
+    "map2",
     "ndcg",
     "ndcg_5",
     "precision_1",
     "precision_5",
     "precision_10",
+    "precision2_1",
+    "precision2_5",
+    "precision2_10",
     "recall_1",
     "recall_5",
     "recall_10",
+    "recall2_1",
+    "recall2_5",
+    "recall2_10",
     "rmse"
 
   ],

@@ -14,7 +14,7 @@
   },
   "data": {
     "path": "./data/MQ2008/Fold1",
-    "validation_ds_role": "test",
+    "validation_ds_role": "vali",
     "num_workers": 1,
     "batch_size": 64,
     "slate_length": 240
@@ -33,7 +33,7 @@
     }
   },
   "training": {
-    "epochs": 100,
+    "epochs": 3,
     "early_stopping_patience": 10,
     "gradient_clipping_norm": null
   },
@@ -41,14 +41,21 @@
   "metrics": [
     "mrr",
     "map",
+    "map2",
     "ndcg",
     "ndcg_5",
     "precision_1",
     "precision_5",
     "precision_10",
+    "precision2_1",
+    "precision2_5",
+    "precision2_10",
     "recall_1",
     "recall_5",
     "recall_10",
+    "recall2_1",
+    "recall2_5",
+    "recall2_10",
     "rmse"
 
   ],
