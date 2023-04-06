@@ -50,6 +50,7 @@
     "map2",
     "ndcg",
     "ndcg_5",
+    "ndcg_10",
     "precision_1",
     "precision_5",
     "precision_10",

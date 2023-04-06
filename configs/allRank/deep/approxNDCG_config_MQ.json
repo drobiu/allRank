@@ -50,6 +50,7 @@
     "map2",
     "ndcg",
     "ndcg_5",
+    "ndcg_10",
     "precision_1",
     "precision_5",
     "precision_10",
@@ -68,6 +69,7 @@
   "loss": {
     "name": "approxNDCGLoss",
     "args": {
+      "eps": 1e-8
     }
   },
   "detect_anomaly": false,

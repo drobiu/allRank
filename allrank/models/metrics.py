@@ -23,8 +23,6 @@ def ndcg(y_pred, y_true, ats=None, gain_function=lambda x: torch.pow(2, x) - 1, 
     ndcg_ = dcg_ / idcg
     idcg_mask = idcg == 0
     ndcg_[idcg_mask] = filler_value  # if idcg == 0 , set ndcg to filler_value
-    dcg_mask = dcg_ == 0
-    ndcg_[dcg_mask] = 0.0  # if dcg == 0 , set ndcg to filler_value
 
     assert (ndcg_ < 0.0).sum() >= 0, "every ndcg should be non-negative"
 
@@ -61,7 +59,7 @@ def dcg(y_pred, y_true, ats=None, gain_function=lambda x: torch.pow(2, x) - 1, p
     if ats is None:
         ats = [actual_length]
 
-    ats = np.where(ats == 0, y_true.shape[1], ats)
+    ats = np.array(ats)
     ats = np.where(ats == 0, y_true.shape[1], ats)
 
     ats = [min(at, actual_length) for at in ats]
@@ -102,7 +100,7 @@ def mrr(y_pred, y_true, ats=None, min_relevance=1.0, padding_indicator=PADDED_Y_
     if ats is None:
         ats = [y_true.shape[1]]
 
-    ats = np.where(ats == 0, y_true.shape[1], ats)
+    ats = np.array(ats)
     ats = np.where(ats == 0, y_true.shape[1], ats)
 
     true_sorted_by_preds = __apply_mask_and_get_true_sorted_by_preds(y_pred, y_true, padding_indicator)
@@ -148,7 +146,7 @@ def avgrank(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE):
     if ats is None:
         ats = [y_true.shape[1]]
 
-    ats = np.where(ats == 0, y_true.shape[1], ats)
+    ats = np.array(ats)
     ats = np.where(ats == 0, y_true.shape[1], ats)
 
     true_sorted_by_preds = __apply_mask_and_get_true_sorted_by_preds(y_pred, y_true, padding_indicator, desc=False)
@@ -227,7 +225,7 @@ def recall(y_pred, y_true, ats=None, min_relevance=1, padding_indicator=PADDED_Y
         if ats is None:
             ats = [y_true.shape[1]]
 
-        ats = np.where(ats == 0, y_true.shape[1], ats)
+        ats = np.array(ats)
         ats = np.where(ats == 0, y_true.shape[1], ats)
 
         true_sorted_by_preds = __apply_mask_and_get_true_sorted_by_preds(y_pred, y_true, padding_indicator)
@@ -274,7 +272,7 @@ def precision(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE, cutoff
     if ats is None:
         ats = [y_true.shape[1]]
 
-    ats = np.where(ats == 0, y_true.shape[1], ats)
+    ats = np.array(ats)
     ats = np.where(ats == 0, y_true.shape[1], ats)
 
     if no_torch:
@@ -368,14 +366,14 @@ def map(y_pred, y_true, ats=None, padding_indicator=PADDED_Y_VALUE, cutoff=1):
         max_len = len(r) if 0 in ats else max_at
         running_sums = np.zeros((max_len))
         # count current amount of true positives
-        current_correct = 0
+        current_relevant = 0
         for at in range(max_len):
             if r[at] >= cutoff:
-                current_correct += 1
+                current_relevant += 1
                 # add current precision
-                running_sum += current_correct / (at + 1)
-            if current_correct > 0:
-                running_sums[at] = running_sum / current_correct
+                running_sum += current_relevant / (at + 1)
+            if current_relevant > 0:
+                running_sums[at] = running_sum / current_relevant
         res[i] = running_sums[np.array(ats) - 1]
 
     return torch.tensor(res)
