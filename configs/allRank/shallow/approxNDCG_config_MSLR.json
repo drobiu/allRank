@@ -4,7 +4,7 @@
       "sizes": [96],
       "input_norm": false,
       "activation": "Sigmoid",
-      "dropout": 0.05
+      "dropout": 0.1
     },
     "transformer": false,
     "post_model": {
@@ -44,6 +44,7 @@
     "map2",
     "ndcg",
     "ndcg_5",
+    "dncg_10",
     "precision_1",
     "precision_5",
     "precision_10",
