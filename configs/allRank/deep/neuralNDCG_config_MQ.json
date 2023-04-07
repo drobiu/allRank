@@ -19,7 +19,7 @@
     }
   },
   "data": {
-    "path": "../IR_final_project/data/MQ2008/Fold1_normalized",
+    "path": "./data/MQ2008",
     "validation_ds_role": "test",
     "num_workers": 1,
     "batch_size": 64,
@@ -46,6 +46,7 @@
   "val_metric": "ndcg_5",
   "metrics": [
     "mrr",
+    "mrr2",
     "map",
     "map2",
     "ndcg",
@@ -63,7 +64,7 @@
     "recall2_1",
     "recall2_5",
     "recall2_10",
-    "rmse"
+    "rmse2"
 
   ],
   "loss": {
