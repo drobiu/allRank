@@ -3,24 +3,18 @@
     "fc_model": {
       "sizes": [96],
       "input_norm": false,
-      "activation": null,
-      "dropout": 0.0
-    },
-    "transformer": {
-      "N": 2,
-      "d_ff": 384,
-      "h": 1,
-      "positional_encoding" : null,
+      "activation": "Sigmoid",
       "dropout": 0.1
     },
+    "transformer": false,
     "post_model": {
       "output_activation": "Tanh",
       "d_output": 1
     }
   },
   "data": {
-    "path": "./data/MSLR-WEB10K",
-    "validation_ds_role": "test",
+    "path": "./data/MQ2008",
+    "validation_ds_role": "vali",
     "num_workers": 1,
     "batch_size": 64,
     "slate_length": 240
@@ -46,30 +40,31 @@
   "val_metric": "ndcg_5",
   "metrics": [
     "mrr",
-    "mrr3",
+    "mrr2",
     "map",
-    "map3",
+    "map2",
     "ndcg",
     "ndcg_5",
     "ndcg_10",
     "precision_1",
     "precision_5",
     "precision_10",
-    "precision3_1",
-    "precision3_5",
-    "precision3_10",
+    "precision2_1",
+    "precision2_5",
+    "precision2_10",
     "recall_1",
     "recall_5",
     "recall_10",
-    "recall3_1",
-    "recall3_5",
-    "recall3_10",
-    "rmse4"
+    "recall2_1",
+    "recall2_5",
+    "recall2_10",
+    "rmse2"
 
   ],
   "loss": {
-    "name": "approxNDCGLoss",
+    "name": "listMLE",
     "args": {
+      
     }
   },
   "detect_anomaly": false,

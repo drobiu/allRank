@@ -20,7 +20,7 @@
   },
   "data": {
     "path": "./data/MQ2008",
-    "validation_ds_role": "test",
+    "validation_ds_role": "vali",
     "num_workers": 1,
     "batch_size": 64,
     "slate_length": 240
@@ -40,7 +40,7 @@
   },
   "training": {
     "epochs": 100,
-    "early_stopping_patience": 100,
+    "early_stopping_patience": 10,
     "gradient_clipping_norm": null
   },
   "val_metric": "ndcg_5",
