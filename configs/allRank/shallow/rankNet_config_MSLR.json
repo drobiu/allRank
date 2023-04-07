@@ -13,8 +13,8 @@
     }
   },
   "data": {
-    "path": "../IR_final_project/data/MSLR-WEB10K/Fold1",
-    "validation_ds_role": "test",
+    "path": "./data/MSLR-WEB10K",
+    "validation_ds_role": "vali",
     "num_workers": 1,
     "batch_size": 64,
     "slate_length": 240
